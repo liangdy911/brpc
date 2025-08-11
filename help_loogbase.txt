@@ -1,0 +1,23 @@
+Compile:
+1. install third party
+sudo apt-get install libunwind-dev
+sudo apt-get install libabsl-dev
+sudo apt-get install libgflags-dev
+sudo apt-get install libleveldb-dev
+sudo apt-get install libprotoc-dev
+sudo apt-get install libleveldb-dev
+sudo apt-get install libprotoc-dev
+sudo apt-get install protobuf-compiler
+
+2. 
+compile openssl
+
+3. build
+sh config_brpc.sh --headers=/usr/include --libs=/usr/lib
+
+4. test
+example/echo_c++
+
+5. reference
+https://brpc.apache.org/zh/docs/getting_started/
+
