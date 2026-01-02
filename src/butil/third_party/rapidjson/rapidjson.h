@@ -301,7 +301,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // RAPIDJSON_NO_SIZETYPEDEFINE
 
-#ifndef RAPIDJSON_NO_SIZETYPEDEFINE
+//#ifndef RAPIDJSON_NO_SIZETYPEDEFINE
 /*! \def RAPIDJSON_NO_SIZETYPEDEFINE
     \ingroup RAPIDJSON_CONFIG
     \brief User-provided \c SizeType definition.
@@ -328,7 +328,7 @@ BUTIL_RAPIDJSON_NAMESPACE_BEGIN
 */
 typedef unsigned SizeType;
 BUTIL_RAPIDJSON_NAMESPACE_END
-#endif
+//#endif
 
 // always import std::size_t to rapidjson namespace
 BUTIL_RAPIDJSON_NAMESPACE_BEGIN

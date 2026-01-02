@@ -32,8 +32,9 @@ option(WITH_DEBUG_LOCK "With debugging lock" OFF)
 option(WITH_ASAN "With AddressSanitizer" OFF)
 option(BUILD_UNIT_TESTS "Whether to build unit tests" OFF)
 option(BUILD_FUZZ_TESTS "Whether to build fuzz tests" OFF)
-option(BUILD_BRPC_TOOLS "Whether to build brpc tools" ON)
+option(BUILD_BRPC_TOOLS "Whether to build brpc tools" OFF)
 option(DOWNLOAD_GTEST "Download and build a fresh copy of googletest. Requires Internet access." ON)
+option(AS_SUBPROJECT "as a subproject, don't find package outside" OFF)
 
 # Enable MACOSX_RPATH. Run "cmake --help-policy CMP0042" for policy details.
 if(POLICY CMP0042)
@@ -176,7 +177,13 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     endif()
 endif()
 
-find_package(Protobuf REQUIRED)
+# find_package(Protobuf REQUIRED)
+if(AS_SUBPROJECT)
+    include(${CMAKE_SOURCE_DIR}/cmake/protobuf.cmake)
+else()
+    find_package(Protobuf REQUIRED)
+endif()
+
 if(Protobuf_VERSION GREATER 4.21)
     # required by absl
     set(CMAKE_CXX_STANDARD 17)
@@ -267,10 +274,15 @@ if(WITH_RDMA)
     endif()
 endif()
 
-find_library(PROTOC_LIB NAMES protoc)
-if(NOT PROTOC_LIB)
-    message(FATAL_ERROR "Fail to find protoc lib")
+if(NOT AS_SUBPROJECT)
+    find_library(PROTOC_LIB NAMES protoc)
+    if(NOT PROTOC_LIB)
+        message(FATAL_ERROR "Fail to find protoc lib")
+    endif()
+else()
+    set(PROTOC_LIB ${PROTOBUF_PROTOC_LIBRARY})
 endif()
+
 
 if(WITH_BORINGSSL)
     find_package(BoringSSL)
@@ -282,7 +294,11 @@ else()
         )
     endif()
 
+if(AS_SUBPROJECT)
+    include(${CMAKE_SOURCE_DIR}/cmake/ssl.cmake)
+else()
     find_package(OpenSSL)
+endif()    
     include_directories(${OPENSSL_INCLUDE_DIR})
 endif()
 
@@ -577,9 +593,10 @@ if(BUILD_FUZZ_TESTS)
 endif()
 
 if(BUILD_BRPC_TOOLS)
-    add_subdirectory(tools)
+#    add_subdirectory(tools)
 endif()
 
+if(NOT AS_SUBPROJECT)
 file(COPY ${CMAKE_CURRENT_BINARY_DIR}/brpc/
         DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/output/include/brpc/
         FILES_MATCHING
@@ -602,3 +619,4 @@ install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/output/include/
 # Install pkgconfig
 configure_file(cmake/brpc.pc.in ${PROJECT_BINARY_DIR}/brpc.pc @ONLY)
 install(FILES ${PROJECT_BINARY_DIR}/brpc.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+endif()
