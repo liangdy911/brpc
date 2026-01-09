@@ -229,12 +229,16 @@ else()
     use_cxx11()
 endif()
 find_package(Threads REQUIRED)
-
+if (AS_SUBPROJECT)
+  set(LEVELDB_LIB leveldb)
+  set(LEVELDB_INCLUDE_PATH ${LEVELDB_INCLUDE_DIRS})
+else()
 find_path(LEVELDB_INCLUDE_PATH NAMES leveldb/db.h)
 find_library(LEVELDB_LIB NAMES leveldb)
 if ((NOT LEVELDB_INCLUDE_PATH) OR (NOT LEVELDB_LIB))
     message(FATAL_ERROR "Fail to find leveldb")
 endif()
+endif() #AS_SUBPROJECT
 
 if(WITH_SNAPPY)
     find_path(SNAPPY_INCLUDE_PATH NAMES snappy.h)
