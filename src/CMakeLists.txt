@@ -34,7 +34,9 @@ set_property(TARGET ${BUTIL_LIB} PROPERTY POSITION_INDEPENDENT_CODE 1)
 add_library(brpc-static STATIC $<TARGET_OBJECTS:BUTIL_LIB>
                                $<TARGET_OBJECTS:SOURCES_LIB>
                                $<TARGET_OBJECTS:PROTO_LIB>)
-if(0)
+if(AS_SUBPROJECT)
+    target_link_libraries(brpc-static ${STATIC_LINK_LIB} ${SSL_LIBRARIES})
+else()
 function(check_thrift_version target_arg)
     #use thrift command to get version
     execute_process(
@@ -107,4 +109,4 @@ install(TARGETS brpc-static
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         )
-endif()        
+endif(NOT AS_SUBPROJECT)
